@@ -1,0 +1,38 @@
+
+basepop <- matrix(c(10,30),nrow = 2)
+matrixA <- matrix(c(0.4,-0.4,0.3,1.2),nrow = 2) # base transformation matrix
+matrixA # print the matrix for visual clarity
+z <- eigen(matrixA) # use z to store the results
+z$val # prints the eigenvalues
+eigenmatrix <- z$vec # prints the eigenvector
+
+eigenmatrix
+eigeninverse <- solve(eigenmatrix) # find the inverse of the eigenmatrix
+constmatrix <- eigeninverse %*% basepop # multiply the matrices
+rownames(constmatrix) = c("c1","c2") # change the rows
+constmatrix # Prints c1 and c2 values
+
+
+popdata = NULL
+
+for(k in 1:50){ #with this loop i can get the results for a huge time period
+  Predator <- c(constmatrix[1,1]*z$val[1]^k*z$vec[1,1])
+  Prey <- c(constmatrix[1,1]*z$val[1]^k*z$vec[2,1])
+  
+  popdata = rbind(popdata, data.frame(k,Predator,Prey)) #data.frame to store the results of the loop
+}
+library(ggplot2)
+ggplot(popdata, aes(Predator, Prey, color = k)) +
+  geom_point() + geom_path()
+
+ggplot(popdata, aes(k, Predator, color = k)) +
+  geom_point() 
+
+ggplot(popdata, aes(k, Prey, color = k)) +
+  geom_point()
+head(popdata)#first 6 values
+print("...")
+tail(popdata)#last 6 values
+
+print(popdata[50,2]/popdata[50,3]) # Last values of the system in the 50th month.
+print(eigenmatrix[1,1]/eigenmatrix[2,1]) # Vector entries in the first eigenvector
